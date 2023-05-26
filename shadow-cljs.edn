@@ -1,0 +1,17 @@
+;https://github.com/ClojureTO/JS-Workshop
+;; shadow-cljs configuration
+{:source-paths
+ ["src/dev"
+  "src/main"
+  "src/test"]
+
+ :dependencies
+ [[reagent "1.1.1"]
+  [cljsjs/chartjs "3.9.1-0"]
+  [cljs-ajax "0.8.4"]]
+
+ :builds
+ {:bootcamp
+  {:target :browser
+   :modules {:main {:init-fn reddit-viewer.core/init!}}
+   }}}
