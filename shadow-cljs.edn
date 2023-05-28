@@ -10,6 +10,7 @@
   [cljsjs/chartjs "3.9.1-0"]
   [cljs-ajax "0.8.4"]]
 
+ :dev-http {8080 "public"}
  :builds
  {:bootcamp
   {:target :browser
