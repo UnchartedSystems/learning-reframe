@@ -17,32 +17,40 @@
              :response-format :json
              :keywords?       true}))
 
-(load-posts)
+(defn display-post [{:keys [permalink subreddit title score url]}]
+  #_(when url [:img {:src url}])
+  [:div.card.m-2
+   [:div.card-block]
+   [:h4.card-title
+    [:a {:href (str "http://reddit.com" permalink)} title " "]]
+   [:div [:span.badge.badge-info {:color "info"} subreddit " score " score]]
+   [:img {:width "300px" :src url}]])
+
+(defn display-posts [posts]
+  (when-not (empty? posts)
+    [:div
+     (for [posts-row (partition-all 3 posts)]
+       ^{:key posts-row}
+       [:div.row
+        (for [post posts-row]
+          ^{:key post}
+          [:div.col-4 [display-post post]])])]))
+
+(defn sort-posts [title sort-key]
+  (when-not (empty? @posts)
+    [:button.btn.btn-secondary
+     {:on-click #(swap! posts (partial sort-by sort-key))}
+     (str "sort posts by " title)]))
+
 (defn home-page []
-  [:div [:h2 "Welcome to Reagent"]])
+  [:div.card>div.card-block
+   [:div.btn-group
+    [sort-posts "score" :score]
+    [sort-posts "comments" :num_comments]]
+   [display-posts @posts]])
 
-(defn mount-root []
+(defn ^:dev/after-load mount-root []
   (rdom/render [home-page] (.-body js/document)))
-
-
 
 (defn init! []
   (mount-root))
-
-
-
-;; (defn root-element []
-;;   [:div.mx-5.my-5
-;;    [:div #_{:class [:container "max-w-[73ch]"]}
-;;     [game/main]]])
-
-;; (defn ^:dev/after-load start []
-;;   (rdom/render
-;;    [:div {:class "bg-[#fff] w-full"} [root-element]]
-;;    (.-body js/document)))
-
-;; (defn init []
-;;   (start))
-
-;; (defn ^:dev/before-load stop []
-;;   #_(js/console.log "stop"))
