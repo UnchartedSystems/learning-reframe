@@ -1,7 +1,8 @@
 (ns reddit-viewer.core
     (:require [reagent.core :as r]
               [reagent.dom :as rdom]
-              [ajax.core :as ajax]))
+              [ajax.core :as ajax]
+              [reddit-viewer.chart :as chart]))
 
 (defonce posts (r/atom nil))
 
@@ -42,12 +43,35 @@
      {:on-click #(swap! posts (partial sort-by sort-key))}
      (str "sort posts by " title)]))
 
+(defn navitem [title view id]
+  [:li.nav-item
+   {:class-name (when (= id @view) "active")}
+   [:a.nav-link
+    {:href "#"
+     :on-click #(reset! view id)}
+    title]])
+
+(defn navbar [view]
+  [:nav.navbar.navbar-toggleable-md.navbar-light.bg-faded
+   [:ul.navbar-nav.mr-auto.nav
+    {:classname "navbar-nav mr-auto"}
+    [navitem "Posts" view :posts]
+    [navitem "Chart" view :chart]]])
+
 (defn home-page []
-  [:div.card>div.card-block
-   [:div.btn-group
-    [sort-posts "score" :score]
-    [sort-posts "comments" :num_comments]]
-   [display-posts @posts]])
+  (let [view (r/atom :posts)]
+    (fn []
+      [:div
+       [navbar view]
+      [:div.card>div.card-block
+       [:div.btn-group
+        [sort-posts "score" :score]
+        [sort-posts "comments" :num_comments]]
+       [display-posts @posts]]]
+      (case @view
+        :chart [chart/chart-posts-by-votes posts]
+        [:posts [display-posts @posts]])
+      )))
 
 (defn ^:dev/after-load mount-root []
   (rdom/render [home-page] (.-body js/document)))
