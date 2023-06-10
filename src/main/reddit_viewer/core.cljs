@@ -63,15 +63,13 @@
     (fn []
       [:div
        [navbar view]
-      [:div.card>div.card-block
-       [:div.btn-group
-        [sort-posts "score" :score]
-        [sort-posts "comments" :num_comments]]
-       [display-posts @posts]]]
-      (case @view
-        :chart [chart/chart-posts-by-votes posts]
-        [:posts [display-posts @posts]])
-      )))
+       [:div.card>div.card-block
+        [:div.btn-group
+         [sort-posts "score" :score]
+         [sort-posts "comments" :num_comments]]
+       (case @view
+         :chart [chart/chart-posts-by-votes posts]
+         :posts [display-posts @posts])]])))
 
 (defn ^:dev/after-load mount-root []
   (rdom/render [home-page] (.-body js/document)))
