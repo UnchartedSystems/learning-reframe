@@ -2,6 +2,7 @@
     (:require [reagent.core :as r]
               [reagent.dom :as rdom]
               [re-frame.core :as rf]
+              [reddit-viewer.events]
               [ajax.core :as ajax]
               [reddit-viewer.chart :as chart]))
 

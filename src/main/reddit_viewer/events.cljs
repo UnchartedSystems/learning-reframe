@@ -4,7 +4,7 @@
    [re-frame.core :as rf]))
 
 (rf/reg-event-db
-  :initialize-db
+  :init-db
   (fn [_ _]
     {:view     :posts
      :sort-key :score}))
