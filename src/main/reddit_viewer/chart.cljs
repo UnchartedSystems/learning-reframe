@@ -2,6 +2,7 @@
     (:require ["react" :as react]
               [reagent.core :as r]
               [reagent.dom :as rdom]
+              [re-frame.core :as rf]
               ["chart.js" :as chartjs]))
 
 (defn render-data [node data]
@@ -19,19 +20,20 @@
     (.destroy @chart)
     (reset! chart nil)))
 
-(defn render-chart [chart data]
+(defn render-chart [chart]
   (fn [component]
-    (when (not-empty @data)
+    (when-let [posts @(rf/subscribe [:posts])]
       (let [node (rdom/dom-node component)]
         (destroy-chart chart)
-        (reset! chart (render-data node @data))))))
+        (reset! chart (render-data node posts))))))
+
+(defn render-canvas []
+  (when @(rf/subscribe [:posts]) [:canvas]))
 
 (defn chart-posts-by-votes [data]
-  (let [chart (r/atom nil)
-        ref (react/createRef)] ;ref   (react/createref)
+  (let [chart (atom nil)]
     (r/create-class
-     {:component-did-mount    (render-chart chart data) #_(fn [_this] ((render-chart chart data) (.-current ref)))
-      :component-did-update   (render-chart chart data) #_(fn [_this] ((render-chart chart data) (.-current ref))) #_(render-chart chart data)
-      :component-will-unmount (fn [_] (destroy-chart chart))
-      :render                 (fn [] (when @data [:canvas]))})))
-
+      {:component-did-mount    (render-chart chart)
+       :component-did-update   (render-chart chart)
+       :component-will-unmount (fn [_] (destroy-chart chart))
+       :render                 render-canvas})))
